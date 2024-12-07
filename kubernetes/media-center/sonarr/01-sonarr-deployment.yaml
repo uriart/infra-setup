@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: media-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+      - name: sonarr
+        image: linuxserver/sonarr:3.0.10
+        ports:
+        - containerPort: 8989
+        env:
+        - name: TZ
+          value: Europe/Madrid
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        volumeMounts:
+          - name: sonarr-data
+            mountPath: /downloads
+            subPath: transmission/downloads
+          - name: sonarr-data
+            mountPath: /config
+            subPath: sonarr/config
+          - name: media-data
+            mountPath: /media
+            subPath: series
+      volumes:
+        - name: sonarr-data
+          persistentVolumeClaim:
+            claimName: media-center-pvc
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: media-pvc

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-entrenapp-service
+  namespace: entrenapp
+spec:
+  selector:
+    app: front-entrenapp
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80

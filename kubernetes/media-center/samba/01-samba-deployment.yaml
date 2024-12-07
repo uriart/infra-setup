@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samba-server
+  namespace: media-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: samba-server
+  template:
+    metadata:
+      labels:
+        app: samba-server
+    spec:
+      containers:
+      - name: samba-server
+        image: dperson/samba
+        ports:
+        - containerPort: 139
+        - containerPort: 445
+        env:
+        - name: TZ
+          value: "Europe/Madrid"
+        - name: USER
+          valueFrom:
+            secretKeyRef:
+              name: samba-secret
+              key: samba-user-pass
+        - name: SHARE
+          valueFrom:
+            secretKeyRef:
+              name: samba-secret
+              key: samba-config
+
+        volumeMounts:
+          - name: media-center-data
+            mountPath: /shared
+      volumes:
+        - name: media-center-data
+          persistentVolumeClaim:
+            claimName: media-center-pvc

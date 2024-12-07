@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: samba-server-service
+  namespace: media-center
+spec:
+  selector:
+    app: samba-server
+  type: ClusterIP
+  ports:
+    - name: first
+      port: 139
+      targetPort: 139
+    - name: second
+      port: 445
+      targetPort: 445
+  externalIPs:
+    - 192.168.1.134

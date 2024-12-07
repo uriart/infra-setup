@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overseerr
+  namespace: media-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: overseerr
+  template:
+    metadata:
+      labels:
+        app: overseerr
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: overseerr
+        image: linuxserver/overseerr:1.33.2
+        ports:
+        - containerPort: 5055
+        env:
+        - name: TZ
+          value: "Europe/Madrid"
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        volumeMounts:
+          - name: media-center-data
+            mountPath: /config
+            subPath: overseerr/config
+#          - name: media-center-data
+#            mountPath: /media
+#            subPath: media
+      volumes:
+        - name: media-center-data
+          persistentVolumeClaim:
+            claimName: media-center-pvc

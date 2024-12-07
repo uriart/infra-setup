@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex-media-server
+  namespace: media-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex-media-server
+  template:
+    metadata:
+      labels:
+        app: plex-media-server
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: plex-media-server
+        image: linuxserver/plex:latest
+        ports:
+        - containerPort: 32400
+        env:
+        - name: TZ
+          value: "Europe/Madrid"
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: VERSION
+          value: latest
+        volumeMounts:
+          - name: media-center-data
+            mountPath: /config
+            subPath: plex/config
+          - name: media-data
+            mountPath: /media
+          - name: media-center-data
+            mountPath: /tmp
+            subPath: plex/tmp
+      volumes:
+        - name: media-center-data
+          persistentVolumeClaim:
+            claimName: media-center-pvc
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: media-pvc

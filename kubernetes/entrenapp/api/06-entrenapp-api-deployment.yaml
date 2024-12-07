@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-entrenapp
+  namespace: entrenapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-entrenapp
+  template:
+    metadata:
+      labels:
+        app: api-entrenapp
+    spec:
+      containers:
+      - name: api-entrenapp
+        image: uriart/api-entrenapp:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_URL
+          value: jdbc:postgresql://postgres-service:5432/${JDBC_DATABASE}
+        - name: JDBC_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: entrenapp-secret
+              key: postgres-password
+        - name: JDBC_DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: entrenapp-secret
+              key: postgres-user
+        - name: JDBC_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: entrenapp-secret
+              key: postgres-db
+        - name: AUTHENTICATION_SERVER_URL
+          value: https://uriart.sytes.net/supertokens-backend
+

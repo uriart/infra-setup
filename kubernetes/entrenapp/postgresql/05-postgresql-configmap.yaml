@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-script
+  namespace: entrenapp
+data:
+  init-script.sh: |
+    #!/bin/bash
+    echo "Creando database supertokens"
+    psql -U ${POSTGRES_USER} -w -d ${POSTGRES_DB} --command 'CREATE DATABASE supertokens'

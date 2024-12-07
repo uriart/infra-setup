@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  namespace: media-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      containers:
+      - name: radarr
+        image: linuxserver/radarr:latest
+        ports:
+        - containerPort: 7878
+        env:
+        - name: TZ
+          value: Europe/Madrid
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        volumeMounts:
+          - name: radarr-data
+            mountPath: /downloads
+            subPath: transmission/downloads
+          - name: radarr-data
+            mountPath: /config
+            subPath: radarr/config
+          - name: media-data
+            mountPath: /media
+            subPath: pelis
+      volumes:
+        - name: radarr-data
+          persistentVolumeClaim:
+            claimName: media-center-pvc
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: media-pvc

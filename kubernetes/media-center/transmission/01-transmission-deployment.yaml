@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transmission
+  namespace: media-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transmission
+  template:
+    metadata:
+      labels:
+        app: transmission
+    spec:
+      containers:
+      - name: transmission
+        image: linuxserver/transmission:4.0.4
+        ports:
+        - containerPort: 9091
+        - containerPort: 51413
+        - containerPort: 51413
+          protocol: UDP
+        env:
+        - name: TZ
+          value: Europe/Madrid
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        volumeMounts:
+          - name: transmission-data
+            mountPath: /downloads
+            subPath: transmission/downloads
+          - name: transmission-data
+            mountPath: /config
+            subPath: transmission/config
+      volumes:
+        - name: transmission-data
+          persistentVolumeClaim:
+            claimName: media-center-pvc

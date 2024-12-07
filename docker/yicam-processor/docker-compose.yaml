@@ -1,0 +1,18 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+    network_mode: bridge
+    volumes:
+      - ./mosquitto_config:/mosquitto/config
+      
+  yicam-processor:
+    image: yicam-processor:0.0.1
+    container_name: yicam-processor
+    depends_on:
+      - mosquitto
+    network_mode: bridge 
+    env_file:
+      - .env
